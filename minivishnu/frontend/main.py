@@ -102,6 +102,11 @@ class SubmitYelpHandler(BaseHandler):
       self.memcache_client.set(self.memcache_key_yelpid(user['id']), yelpId, 0)
       self.redirect('/')
 
+class MatchVenuesHandler(BaseHandler):
+  def get(self):
+    print "YOOOO"
+    self.send_error(400)
+
 class OAuthLoginHandler(BaseHandler, FoursquareMixin):
   URI = '/auth/foursquare'
 
@@ -138,13 +143,14 @@ def main():
     url(r'/$', RootHandler),
     url(r'/logout$', LogoutHandler),
     url(r'/submityelp$', SubmitYelpHandler),
+    url(r'/matchvenues$', MatchVenuesHandler),
     url(r'%s$' % OAuthLoginHandler.URI, OAuthLoginHandler)
   ]
 
   app = Application(
     handlers,
     debug = options.debug,
-    xsrf_cookies = True,
+    xsrf_cookies = False, # TODO
     cookie_secret = 'deadb33fd00dc9234adeda42777',
     template_path = template_path,
     static_path = static_path,

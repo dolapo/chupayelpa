@@ -3,5 +3,6 @@
   "paths": ".",
   "inputs": "main.js",
  //  "level": "VERBOSE",
-  "mode": "SIMPLE"
+  //"mode": "SIMPLE"
+  "mode": "RAW"
 }

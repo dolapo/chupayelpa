@@ -135,6 +135,12 @@ div.content.yelp-content {
 #enter-yelp .bkrow .checky {
   width: 48px;
 }
+#enter-yelp .bkrow .fsqinfo {
+  float: right;
+  min-height: 48px;
+  width: 96px;
+  padding-top: 12px;
+};
 
 #enter-yelp .bkrow .checky .sync-this {
   margin-top: 24px;
@@ -157,4 +163,22 @@ div.content.yelp-content {
 
 #enter-yelp .bkrow:hover .name a {
   color: #00c;
+}
+
+#enter-yelp .bkrow.loading .fsqinfo {
+  background-image: url(/static/ajax-loader.gif);
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+#enter-yelp .bkrow .fsqinfo .failure {
+  display: none;
+  font-size: 9pt;
+  color: #888;
+}
+#enter-yelp .bkrow .fsqinfo .failure .frown {
+  color: red;
+}
+
+#enter-yelp .bkrow.failed .fsqinfo .failure {
+  display: inline;
 }

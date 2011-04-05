@@ -8,10 +8,10 @@ goog.require('minivishnu.chupayelpa.ui.BookmarksTable');
 /**
  * @param {Array.<Object>} yelpBookmarks
  */
-minivishnu.chupayelpa.main = function(yelpBookmarks) {
+minivishnu.chupayelpa.main = function(userId, yelpBookmarks) {
   var table = goog.dom.getElement('bk-table');
   if (table) {
-    var syncer = new minivishnu.chupayelpa.TodoSyncer(yelpBookmarks);
+    var syncer = new minivishnu.chupayelpa.TodoSyncer(userId, yelpBookmarks);
     var ui = new minivishnu.chupayelpa.ui.BookmarksTable(syncer);
     ui.decorate(table);
     syncer.startMatching();

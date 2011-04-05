@@ -1,7 +1,9 @@
 goog.provide('minivishnu.chupayelpa.ui.BookmarksTable');
 
-goog.require('minivishnu.chupayelpa.TodoSyncer');
+goog.require('goog.dom.classes');
 goog.require('goog.ui.Component');
+goog.require('minivishnu.chupayelpa.TodoSyncer');
+goog.require('minivishnu.chupayelpa.TodoSyncer.VenuesMatchFailedEvent');
 
 
 /**
@@ -14,7 +16,10 @@ minivishnu.chupayelpa.ui.BookmarksTable = function(syncer, opt_domHelper) {
   this.syncer_ = syncer;
   this.getHandler().listen(this.syncer_,
                            minivishnu.chupayelpa.TodoSyncer.EventType.VENUES_MATCHED,
-                           this.onInitialSync_);
+                           this.onVenuesMatched_);
+  this.getHandler().listen(this.syncer_,
+                           minivishnu.chupayelpa.TodoSyncer.EventType.VENUES_MATCH_FAILED,
+                           this.onVenuesMatchFailed_);
 };
 goog.inherits(minivishnu.chupayelpa.ui.BookmarksTable, goog.ui.Component);
 
@@ -25,5 +30,16 @@ minivishnu.chupayelpa.ui.BookmarksTable.prototype.decorateInternal = function(el
 /**
  * @private
  */
-minivishnu.chupayelpa.ui.BookmarksTable.prototype.onInitialSync_ = function(ev) {
+minivishnu.chupayelpa.ui.BookmarksTable.prototype.onVenuesMatched_ = function(ev) {
+};
+
+/**
+ * @private
+ */
+minivishnu.chupayelpa.ui.BookmarksTable.prototype.onVenuesMatchFailed_ = function(ev) {
+  var bookmarks = ev.bookmarks;
+  for (var i = 0, bookmark; bookmark = ev.bookmarks[i]; i++) {
+    var node = this.getDomHelper().getElement(bookmark['id']);
+    goog.dom.classes.swap(node, 'loading', 'failed');
+  }
 };

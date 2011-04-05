@@ -49,7 +49,7 @@
                 </div>
                 <div id="bk-table" class="bklist">
                   {% for yelpBookmark in yelpBookmarks %}
-                    <div class="bkrow">
+                    <div id="{{yelpBookmark['id']}}" class="bkrow loading">
                       <div class="checky">
                         <input type="checkbox" disabled="disabled" class="sync-this" />
                       </div>
@@ -67,6 +67,9 @@
                         <div class="address">
                           {{'<br />'.join(yelpBookmark['formatted_address_brief'])}}
                         </div>
+                      </div>
+                      <div class="fsqinfo">
+                        <span class="failure">no match&nbsp;<span class="frown">:(</span></span>
                       </div>
                     </div>
                   {% end %}
