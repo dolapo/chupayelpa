@@ -25,13 +25,37 @@
           <div class="body">
             {% if user %}
               <span class="small">
-                (p.s. you can <a href="#">log out</a> of foursquare if you wish.)
+                (p.s. you can <a href="#">log out</a> and start over if you wish)
               </span>
             {% else %}
               <a href="/auth/foursquare">login with foursquare</a> to get started.
             {% end %}
           </div>
         </div>
+
+        {% comment split all this in to modules %}
+        {% if user %}
+          <div id="enter-yelp" class="content{%if yelpId%} has-yelp{%else%} no-yelp{%end%}">
+            {% if yelpId %}
+              <h1>Your Yelp Info</h1>
+            {% else %}
+              <h1>Next: We Need Your Yelp Id</h1>
+              <div class="body">
+                {% if yelpError %}
+                <div class="error">Error: {{yelpError}}</div>
+                {% end %}
+                <form action="/submityelp" method="post">
+                  {{ xsrf_form_html() }}
+                  <input id="yelpid" name="yelpid" class="text" type="text"></input>
+                  <input class="submit" type="submit" value="Go">
+                </form>
+                <span class="small">
+                (p.s. this is the userid param when you visit your yelp profile)
+                </span>
+              </div>
+            {% end %}
+          </div>
+        {% end %}
       </div>
     </div>
 

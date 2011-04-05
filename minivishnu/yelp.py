@@ -48,11 +48,16 @@ class YelpBookmarksClient(YelpWebClient):
       return
 
     biz_list = match.group(1)
+    decoded = None
     try:
-      callback(json_decode(biz_list))
+      decoded = json_decode(biz_list)
     except Exception as e:
-      logging.error('unable to decode json', e)
-      callback(None, error = (999, 'unable to decode json: %s' % biz_list))
+      logging.error('unable to decode json: %s', e)
+      callback(None, error = (999, 'unable to decode json'))
+      return
+
+    callback(decoded)
+
 
 
 if __name__ == '__main__':

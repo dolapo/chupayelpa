@@ -43,11 +43,51 @@ div.content .small {
   font-size: 8pt;
 }
 
+div.content .error {
+  font-size: 10pt;
+  color: red;
+  margin-bottom: 6px;
+}
+
+div.container .content:hover {
+  border: 1px solid #ffa348;
+}
+
 div.content a,
 div.content a:visited {
   text-decoration: none;
+  color: #00c;
 }
 
 div.content a:hover {
   text-decoration: underline;
+}
+
+div.container .content.no-yelp:hover,
+div.content.no-yelp {
+  border: 2px solid #ffa348;
+  min-height: 100px;
+}
+
+#enter-yelp form input.text {
+  height: 36px;
+  border: 1px solid #d9d9d9;
+  width: 400px;
+  font-size: 12pt;
+}
+
+#enter-yelp form input.submit {
+  height: 40px;
+  border: 1px solid #d9d9d9;
+  background-color: #f0f0f0;
+  padding: 0 12px;
+  font-size: 12pt;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#enter-yelp form input.submit:hover,
+#enter-yelp form input.submit:active {
+  -webkit-box-shadow: -1px 1px 1px #888 inset;
+  box-shadow: -1px 1px 1px #888 inset;
 }
