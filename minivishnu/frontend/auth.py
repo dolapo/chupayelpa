@@ -62,8 +62,8 @@ class FoursquareMixin(OAuth2Mixin):
 
   def _on_foursquare_request(self, callback, response):
     if response.error:
-      logging.warning('Error response %s from foursquare: %s',
-                      response.error, response.request.url)
+      logging.warning('Error response %s from foursquare on %s: %s',
+                      response.error, response.request.url, response.body)
       callback(None)
     else:
       callback(json_decode(response.body))

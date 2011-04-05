@@ -13,6 +13,7 @@ import os.path
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
+import urllib
 
 define('port', type = int, default = 9009)
 define('debug', type = bool, default = False)
@@ -102,10 +103,43 @@ class SubmitYelpHandler(BaseHandler):
       self.memcache_client.set(self.memcache_key_yelpid(user['id']), yelpId, 0)
       self.redirect('/')
 
-class MatchVenuesHandler(BaseHandler):
+class MatchVenuesHandler(BaseHandler, FoursquareMixin):
+  @tornado.web.asynchronous
   def get(self):
-    print "YOOOO"
-    self.send_error(400)
+    user = self.get_current_user()
+    bookmarks = self.get_argument('bookmarks', None)
+    if not user or not bookmarks:
+      self.send_error(400)
+      return
+
+    bookmarks = json_decode(bookmarks)
+
+    def make_req(bookmark):
+      req_args = {
+        'll': '%.8f,%.8f' % (bookmark['latitude'], bookmark['longitude']),
+        'llAcc': '1000',
+        'intent': 'match',
+        'query': bookmark['name'],
+        # boo
+        #'url': 'http://yelp.com/biz/%s' % bookmark['id']
+        'providerId': 'yelp'
+      }
+      return '/venues/search?%s' % urllib.urlencode(req_args)
+
+    self.foursquare_request(
+      '/multi',
+      functools.partial(self._on_multi, bookmarks),
+      user['access_token'],
+      requests = ','.join([make_req(b) for b in bookmarks]))
+
+  def _on_multi(self, bookmarks, response):
+    results = {}
+    for (bookmark, outerresponse) in zip(bookmarks, response['response']['responses']):
+      response = outerresponse['response']
+      groups = response['groups']
+      for group in groups:
+        results[bookmark['id']] = group['items']
+    self.finish({'results': results})
 
 class OAuthLoginHandler(BaseHandler, FoursquareMixin):
   URI = '/auth/foursquare'
