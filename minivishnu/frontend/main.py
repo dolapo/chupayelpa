@@ -65,6 +65,18 @@ class RootHandler(BaseHandler, FoursquareMixin):
                 yelpId = yelpId,
                 yelpBookmarks = yelpBookmarks)
 
+class LogoutHandler(BaseHandler):
+  def get(self):
+    user = self.get_current_user()
+    if user:
+      yelpId = self.memcache_client.get(self.memcache_key_yelpid(user['id']))
+      if yelpId:
+        self.memcache_client.delete_multi([self.memcache_key_yelpid(user['id']),
+                                           self.memcache_key_bookmarks(yelpId)])
+      self.clear_all_cookies()
+    self.redirect('/')
+
+
 class SubmitYelpHandler(BaseHandler):
   # This is kind of nasty but i don't want to deal with ajax just yet.
   @tornado.web.asynchronous
@@ -124,6 +136,7 @@ def main():
 
   handlers = [
     url(r'/$', RootHandler),
+    url(r'/logout$', LogoutHandler),
     url(r'/submityelp$', SubmitYelpHandler),
     url(r'%s$' % OAuthLoginHandler.URI, OAuthLoginHandler)
   ]
