@@ -30,21 +30,38 @@ class YelpBookmarksClient(YelpWebClient):
     # beware, THAR BE HACKS
     # yelp doesn't expose their bookmarks via the api, but we know it's available
     # via json in the html
-    self.request('/user_details_bookmarks',
-                 functools.partial(self._on_bookmarks, user_id, callback),
-                 userid = user_id)
+    results = []
+    self._make_request(user_id, results, callback)
 
-  def _on_bookmarks(self, user_id, callback, response):
+  def _make_request(self, user_id, results, callback, page = 0):
+    logging.debug('making request, page = %d, current num results = %s', page, len(results))
+    args = {'userid': user_id}
+    if page > 0:
+      args['start'] = page * 50
+
+    self.request('/user_details_bookmarks',
+                 functools.partial(self._on_bookmarks, user_id, results, callback, page),
+                 **args)
+
+  def _on_bookmarks(self, user_id, results, callback, page, response):
     if response.error:
-      logging.debug('Error response %s from yelp: %s', response.error, response.body)
-      callback(None, error = (response.error, response.body))
+      if len(results) == 0:
+        logging.debug('Error response %s from yelp: %s', response.error, response.body)
+        callback(None, error = (response.error, response.body))
+      else:
+        logging.debug('error response %s from yelp, but we\'re done', response.error)
+        callback(results)
       return
 
     # OH EM GEE
     match = YelpBookmarksClient.BIZ_LIST_RE.search(response.body)
     if match == None:
-      logging.debug('No match, maybe user isn\'t public?')
-      callback(None, error = (999, 'no bizlist, user might not be public?'))
+      if len(results) == 0:
+        logging.debug('No match, maybe user isn\'t public?')
+        callback(None, error = (999, 'no bizlist, user might not be public?'))
+      else:
+        logging.debug('No match, maybe all done?')
+        callback(results)
       return
 
     biz_list = match.group(1)
@@ -56,26 +73,40 @@ class YelpBookmarksClient(YelpWebClient):
       callback(None, error = (999, 'unable to decode json'))
       return
 
-    callback(decoded)
-
-
+    results = results + decoded
+    if len(decoded) == 50:
+      logging.debug('found 50, trying next page')
+      # try page next
+      self._make_request(user_id, results, callback, page = page + 1)
+      return
+    else:
+      logging.debug('found fewer than 50. done?')
+      callback(results)
 
 if __name__ == '__main__':
   parse_command_line()
+  user_ids = ['wZ46o0rz0IbF8dYenyQVbw', # dolapo
+              'W46UkrAvPokkWfXno1cD6g'  # some girl
+             ]
+
+  class Barrier:
+    def __init__(self, total):
+      self.num_calls = 0
+      self.total = total
+
   def _test_callback(barrier, user_id, bookmarks, error = None):
     if error:
       logging.warning('unable to get bookmarks for %s: %s' % (user_id, error))
     else:
-      logging.warning('bookmarks for %s: %s' % (user_id, bookmarks))
-    if barrier == 0:
+      logging.warning('bookmarks for %s: %s' % (user_id, len(bookmarks)))
+    barrier.num_calls += 1
+    if barrier.num_calls == barrier.total:
       tornado.ioloop.IOLoop.instance().stop()
 
-  user_ids = ['wZ46o0rz0IbF8dYenyQVbw', # dolapo
-              'W46UkrAvPokkWfXno1cD6g'  # some girl
-             ]
   # a lil test driver
   client = YelpBookmarksClient()
+  barrier = Barrier(len(user_ids))
   for i, user_id in enumerate(user_ids):
     client.get_bookmarks(user_id,
-                         functools.partial(_test_callback, len(user_ids) - 1 - i, user_id))
+                         functools.partial(_test_callback, barrier, user_id))
   tornado.ioloop.IOLoop.instance().start()
