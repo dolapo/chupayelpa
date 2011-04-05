@@ -45,7 +45,7 @@
               </h1>
               <div class="body">
                 <div class="head loading">
-                  matched <span class="prog">0</span> foursquare venues...
+                  matched <span id="total-matched" class="prog">0</span> foursquare venues...
                 </div>
                 <div id="bk-table" class="bklist">
                   {% for yelpBookmark in yelpBookmarks %}
@@ -70,6 +70,14 @@
                       </div>
                       <div class="fsqinfo">
                         <span class="failure">no match&nbsp;<span class="frown">:(</span></span>
+                        <div class="success">
+                          <div class="name">
+                            <a href="#" class="link" target="_blank"></a>
+                          </div>
+                          <span class="other-matches">
+                            (<span class="other-count"></span> other matches</a>)
+                          </span>
+                        </div>
                       </div>
                     </div>
                   {% end %}

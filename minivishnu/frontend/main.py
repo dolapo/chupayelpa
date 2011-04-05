@@ -1,7 +1,7 @@
 from minivishnu.frontend.auth import FoursquareMixin
 from minivishnu.yelp import YelpBookmarksClient
 from tornado import template
-from tornado.escape import json_encode, json_decode
+from tornado.escape import json_encode, json_decode, url_escape
 from tornado.options import options, define, parse_command_line
 from tornado.web import Application, RequestHandler, url
 
@@ -119,7 +119,7 @@ class MatchVenuesHandler(BaseHandler, FoursquareMixin):
         'll': '%.8f,%.8f' % (bookmark['latitude'], bookmark['longitude']),
         'llAcc': '1000',
         'intent': 'match',
-        'query': bookmark['name'],
+        'query': url_escape(bookmark['name']),
         # boo
         #'url': 'http://yelp.com/biz/%s' % bookmark['id']
         'providerId': 'yelp'

@@ -138,7 +138,7 @@ div.content.yelp-content {
 #enter-yelp .bkrow .fsqinfo {
   float: right;
   min-height: 48px;
-  width: 96px;
+  width: 192px;
   padding-top: 12px;
 };
 
@@ -170,7 +170,8 @@ div.content.yelp-content {
   background-repeat: no-repeat;
   background-position: right center;
 }
-#enter-yelp .bkrow .fsqinfo .failure {
+#enter-yelp .bkrow .fsqinfo .failure,
+#enter-yelp .bkrow .fsqinfo .success {
   display: none;
   font-size: 9pt;
   color: #888;
@@ -179,6 +180,12 @@ div.content.yelp-content {
   color: red;
 }
 
+#enter-yelp .bkrow.success .fsqinfo .success,
 #enter-yelp .bkrow.failed .fsqinfo .failure {
   display: inline;
+}
+
+#enter-yelp .bkrow.success .fsqinfo .success .other-matches {
+  font-size: 8pt;
+  color: #00c;
 }

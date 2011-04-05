@@ -1,6 +1,7 @@
 goog.provide('minivishnu.chupayelpa.TodoSyncer');
 goog.provide('minivishnu.chupayelpa.TodoSyncer.EventType');
 goog.provide('minivishnu.chupayelpa.TodoSyncer.VenuesMatchFailedEvent');
+goog.provide('minivishnu.chupayelpa.TodoSyncer.VenuesMatchedEvent');
 
 goog.require('goog.Uri');
 goog.require('goog.events.EventTarget');
@@ -18,7 +19,7 @@ minivishnu.chupayelpa.TodoSyncer = function(userId, yelpBookmarks) {
 };
 goog.inherits(minivishnu.chupayelpa.TodoSyncer, goog.events.EventTarget);
 
-minivishnu.chupayelpa.TodoSyncer.CHUNK_SIZE = 10;
+minivishnu.chupayelpa.TodoSyncer.CHUNK_SIZE = 5;
 
 minivishnu.chupayelpa.TodoSyncer.prototype.startMatching = function() {
   var cs = minivishnu.chupayelpa.TodoSyncer.CHUNK_SIZE;
@@ -27,9 +28,11 @@ minivishnu.chupayelpa.TodoSyncer.prototype.startMatching = function() {
                                  i, Math.min(this.yelpBookmarks_.length, i + cs))
     var uri = new goog.Uri('/matchvenues');
     uri.getQueryData().add('user', this.userId_);
-    uri.getQueryData().add('venues', goog.json.serialize(chunk));
+    uri.getQueryData().add('bookmarks', goog.json.serialize(chunk));
     goog.net.XhrIo.send(uri, goog.bind(this.onBookmarksMatch_, this, chunk), 'GET',
                         undefined, undefined, 10000);
+    // TODO(dolapo): uncomment when done testing.
+    break;
   }
 };
 
@@ -43,6 +46,8 @@ minivishnu.chupayelpa.TodoSyncer.prototype.onBookmarksMatch_ = function(bookmark
       new minivishnu.chupayelpa.TodoSyncer.VenuesMatchFailedEvent(bookmarks))
   } else {
     var obj = xhr.getResponseJson();
+    this.dispatchEvent(
+      new minivishnu.chupayelpa.TodoSyncer.VenuesMatchedEvent(obj['results']))
   }
 };
 
@@ -60,3 +65,13 @@ minivishnu.chupayelpa.TodoSyncer.VenuesMatchFailedEvent = function(bookmarks) {
   this.bookmarks = bookmarks;
 };
 goog.inherits(minivishnu.chupayelpa.TodoSyncer.VenuesMatchFailedEvent, goog.events.Event);
+
+/**
+ * @constructor
+ * @extends {goog.events.Event}
+ */
+minivishnu.chupayelpa.TodoSyncer.VenuesMatchedEvent = function(venuesByYelpId) {
+  goog.base(this, minivishnu.chupayelpa.TodoSyncer.EventType.VENUES_MATCHED);
+  this.venuesByYelpId = venuesByYelpId;
+}
+goog.inherits(minivishnu.chupayelpa.TodoSyncer.VenuesMatchedEvent, goog.events.Event);
