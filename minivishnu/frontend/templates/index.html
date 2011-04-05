@@ -38,16 +38,24 @@
         {% if user %}
           <div id="enter-yelp" class="content yelp-content{%if yelpId%} has-yelp{%else%} no-yelp{%end%}">
             {% if yelpId %}
-              <h1>Your {{ len(yelpBookmarks) }} Yelp Bookmarks</h1>
+              <h1>Your {{ len(yelpBookmarks) }} Yelp Bookmarks
+                <span class="actions">
+                  ( <span class="all link">all</span> | <span class="none link">none</span> )
+                </span>
+              </h1>
               <div class="body">
-                <div class="head">
+                <div class="head loading">
+                  matched <span class="prog">0</span> foursquare venues...
                 </div>
-                <div class="bklist">
+                <div id="bk-table" class="bklist">
                   {% for yelpBookmark in yelpBookmarks %}
                     <div class="bkrow">
+                      <div class="checky">
+                        <input type="checkbox" disabled="disabled" class="sync-this" />
+                      </div>
                       <div class="info">
                         <div class="name">
-                          <a href="http://yelp.com/biz/{{yelpBookmark['id']}}">
+                          <a target="_blank" href="http://yelp.com/biz/{{yelpBookmark['id']}}">
                             {{yelpBookmark['name']}}
                           </a>
                         </div>
@@ -85,7 +93,9 @@
       </div>
     </div>
     <script>
-      minivishnu.chupayelpa.main();
+      {% if yelpId %}
+        minivishnu.chupayelpa.main({{user['id']}}, {{json_encode(yelpBookmarks)}});
+      {% end %}
     </script>
   </body>
 </html>

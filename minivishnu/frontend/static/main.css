@@ -69,6 +69,25 @@ div.content.yelp-content {
   min-height: 100px;
 }
 
+#enter-yelp .head.loading {
+  background-image: url(/static/ajax-loader.gif);
+  background-repeat: no-repeat;
+  background-position: right center;
+  padding: 6px 36px;
+  font-style: italic;
+  text-align: right;
+}
+
+#enter-yelp .head.loading .prog {
+  font-weight: bold;
+}
+
+#enter-yelp h1 .actions {
+  font-weight: normal;
+  font-size: 9pt;
+  margin-left: 12px;
+}
+
 #enter-yelp form input.text {
   height: 36px;
   border: 1px solid #d9d9d9;
@@ -101,10 +120,24 @@ div.content.yelp-content {
   border-bottom: 1px solid #d4d4d4;
   max-width: 95%;
   padding: 6px 0 12px 0;
+  overflow: auto;
 }
 
 #enter-yelp .bkrow:hover {
   background-color: #fafafa;
+}
+
+#enter-yelp .bkrow .checky,
+#enter-yelp .bkrow .info {
+  float: left;
+}
+
+#enter-yelp .bkrow .checky {
+  width: 48px;
+}
+
+#enter-yelp .bkrow .checky .sync-this {
+  margin-top: 24px;
 }
 
 #enter-yelp .bkrow .name {
