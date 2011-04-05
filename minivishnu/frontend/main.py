@@ -37,24 +37,33 @@ class BaseHandler(RequestHandler):
       None
 
   def memcache_key_bookmarks(self, yelpId):
-    return str('mv/chupayelpa/yelpbookmarks/%s' % yelpId)
+    return str('mv/chupayelpa/yelpbookmarks/%s/v2' % yelpId)
 
   def memcache_key_yelpid(self, userId):
-    return str('mv/chupayelpa/user/%s/yelpId' % userId)
+    return str('mv/chupayelpa/user/%s/yelpId/v0' % userId)
 
 class RootHandler(BaseHandler, FoursquareMixin):
   @tornado.web.asynchronous
   def get(self):
     yelpId = None
+    yelpBookmarks = None
     user = self.get_current_user()
     if user:
       yelpId = self.memcache_client.get(self.memcache_key_yelpid(user['id']))
       logging.debug('yelp id in cache: %s' % yelpId)
+      yelpBookmarks = self.memcache_client.get(
+        self.memcache_key_bookmarks(yelpId))
+      if yelpBookmarks:
+        yelpBookmarks = json_decode(yelpBookmarks)
+      else:
+        logging.warning('bookmarks not in cache, reseting id')
+        yelpId = None
 
     self.render('index.html',
                 user = user,
                 yelpError = self.get_argument('yelp_error', None),
-                yelpId = yelpId)
+                yelpId = yelpId,
+                yelpBookmarks = yelpBookmarks)
 
 class SubmitYelpHandler(BaseHandler):
   # This is kind of nasty but i don't want to deal with ajax just yet.
@@ -75,8 +84,10 @@ class SubmitYelpHandler(BaseHandler):
     else:
       logging.debug('yelp looks good, saving info')
       user = self.get_current_user()
-      self.memcache_client.set(self.memcache_key_bookmarks(yelpId), bookmarks, 0)
-      self.memcache_client.set(self.memcache_key_yelpid(user['id']), yelpId)
+      # TODO(dolapo): may need to zip this
+      self.memcache_client.set(self.memcache_key_bookmarks(yelpId),
+                               json_encode(bookmarks), 0)
+      self.memcache_client.set(self.memcache_key_yelpid(user['id']), yelpId, 0)
       self.redirect('/')
 
 class OAuthLoginHandler(BaseHandler, FoursquareMixin):

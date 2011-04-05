@@ -35,9 +35,14 @@
 
         {% comment split all this in to modules %}
         {% if user %}
-          <div id="enter-yelp" class="content{%if yelpId%} has-yelp{%else%} no-yelp{%end%}">
+          <div id="enter-yelp" class="content yelp-content{%if yelpId%} has-yelp{%else%} no-yelp{%end%}">
             {% if yelpId %}
               <h1>Your Yelp Info</h1>
+              <div class="body">
+                <div class="head">
+                  {{ len(yelpBookmarks) }} bookmarks
+                </div>
+              </div>
             {% else %}
               <h1>Next: We Need Your Yelp Id</h1>
               <div class="body">

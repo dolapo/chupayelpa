@@ -63,8 +63,8 @@ div.content a:hover {
   text-decoration: underline;
 }
 
-div.container .content.no-yelp:hover,
-div.content.no-yelp {
+div.container .content.yelp-content:hover,
+div.content.yelp-content {
   border: 2px solid #ffa348;
   min-height: 100px;
 }
