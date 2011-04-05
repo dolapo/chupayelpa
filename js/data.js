@@ -22,25 +22,26 @@ goog.inherits(minivishnu.chupayelpa.TodoSyncer, goog.events.EventTarget);
 minivishnu.chupayelpa.TodoSyncer.CHUNK_SIZE = 5;
 
 minivishnu.chupayelpa.TodoSyncer.prototype.startMatching = function() {
-  var cs = minivishnu.chupayelpa.TodoSyncer.CHUNK_SIZE;
-  for (var i = 0; i < this.yelpBookmarks_.length; i += cs) {
-    // TODO(dolapo): change to do this serially?
-    var chunk = goog.array.slice(this.yelpBookmarks_,
-                                 i, Math.min(this.yelpBookmarks_.length, i + cs))
-    var uri = new goog.Uri('/matchvenues');
-    uri.getQueryData().add('user', this.userId_);
-    uri.getQueryData().add('bookmarks', goog.json.serialize(chunk));
-    goog.net.XhrIo.send(uri, goog.bind(this.onBookmarksMatch_, this, chunk), 'GET',
-                        undefined, undefined, 10000);
-    // TODO(dolapo): uncomment when done testing.
-    break;
-  }
+  this.requestBatch_(0);
 };
+
+minivishnu.chupayelpa.TodoSyncer.prototype.requestBatch_ = function(start) {
+  var cs = minivishnu.chupayelpa.TodoSyncer.CHUNK_SIZE;
+  if (start > this.yelpBookmarks_.length) return;
+  var chunk = goog.array.slice(this.yelpBookmarks_,
+                               start, Math.min(this.yelpBookmarks_.length, start + cs))
+  var uri = new goog.Uri('/matchvenues');
+  uri.getQueryData().add('user', this.userId_);
+  uri.getQueryData().add('bookmarks', goog.json.serialize(chunk));
+  goog.net.XhrIo.send(uri, goog.bind(this.onBookmarksMatch_, this, chunk, start + cs), 'GET',
+                      undefined, undefined, 30000);
+}
 
 /**
  * @private
  */
-minivishnu.chupayelpa.TodoSyncer.prototype.onBookmarksMatch_ = function(bookmarks, e) {
+minivishnu.chupayelpa.TodoSyncer.prototype.onBookmarksMatch_ =
+    function(bookmarks, nextBatchStart, e) {
   var xhr = e.target;
   if (xhr.getStatus() != 200) {
     this.dispatchEvent(
@@ -49,6 +50,8 @@ minivishnu.chupayelpa.TodoSyncer.prototype.onBookmarksMatch_ = function(bookmark
     var obj = xhr.getResponseJson();
     this.dispatchEvent(
       new minivishnu.chupayelpa.TodoSyncer.VenuesMatchedEvent(obj['results']))
+    // TODO(dolapo): uncomment when done testing.
+    this.requestBatch_(nextBatchStart);
   }
 };
 

@@ -133,12 +133,14 @@ class MatchVenuesHandler(BaseHandler, FoursquareMixin):
       user['access_token'],
       requests = ','.join([make_req(b) for b in bookmarks]))
 
-  def _on_multi(self, bookmarks, response):
+  def _on_multi(self, bookmarks, lresponse):
     results = {}
-    for (bookmark, outerresponse) in zip(bookmarks, response['response']['responses']):
+    for (bookmark, outerresponse) in zip(bookmarks, lresponse['response']['responses']):
       response = outerresponse['response']
       # TODO(dolapo): may not exist
-      groups = response['groups']
+      if (response.get('groups') == None):
+        logging.error('OH OH, what is: %s' % lresponse)
+      groups = response.get('groups', [])
       for group in groups:
         results[bookmark['id']] = group['items']
     self.finish({'results': results})

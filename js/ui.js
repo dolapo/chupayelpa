@@ -41,6 +41,7 @@ minivishnu.chupayelpa.ui.BookmarksTable.prototype.onVenuesMatched_ = function(ev
       var venue = venues[0];
 
       var node = dh.getElement(yelpId);
+      if (!node) continue;
       // TODO(dolapo): just use soy
       var successNode = dh.getElementsByTagNameAndClass('div', 'success', node)[0];
 

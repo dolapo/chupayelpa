@@ -56,7 +56,7 @@ class FoursquareMixin(OAuth2Mixin):
     http = AsyncHTTPClient()
     if post_args is not None:
       http.fetch(url, method = 'POST', body = urllib.urlencode(post_args),
-                 callback = callback)
+                 callback = callback, connect_timeout = 30.0, request_timeout = 30.0)
     else:
       http.fetch(url, callback = callback)
 
