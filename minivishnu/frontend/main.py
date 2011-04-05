@@ -4,6 +4,7 @@ from tornado import template
 from tornado.escape import json_encode, json_decode, url_escape
 from tornado.options import options, define, parse_command_line
 from tornado.web import Application, RequestHandler, url
+from tornado.httpclient import AsyncHTTPClient
 
 import functools
 import json
@@ -136,6 +137,7 @@ class MatchVenuesHandler(BaseHandler, FoursquareMixin):
     results = {}
     for (bookmark, outerresponse) in zip(bookmarks, response['response']['responses']):
       response = outerresponse['response']
+      # TODO(dolapo): may not exist
       groups = response['groups']
       for group in groups:
         results[bookmark['id']] = group['items']
@@ -169,6 +171,7 @@ class OAuthLoginHandler(BaseHandler, FoursquareMixin):
 
 def main():
   parse_command_line()
+  client = AsyncHTTPClient(max_clients = 100)
   template_path = os.path.join(os.path.dirname(__file__), 'templates')
   static_path = os.path.join(os.path.dirname(__file__), 'static')
   template_loader_factory = lambda: template.Loader(template_path)
@@ -188,7 +191,8 @@ def main():
     cookie_secret = 'deadb33fd00dc9234adeda42777',
     template_path = template_path,
     static_path = static_path,
-    memcache_client = memcache.Client([options.memcache_host], debug = 0)
+    memcache_client = memcache.Client([options.memcache_host], debug = 0),
+    httpclient = client
   )
 
   logging.info('starting on port %d' % options.port)

@@ -24,6 +24,7 @@ minivishnu.chupayelpa.TodoSyncer.CHUNK_SIZE = 5;
 minivishnu.chupayelpa.TodoSyncer.prototype.startMatching = function() {
   var cs = minivishnu.chupayelpa.TodoSyncer.CHUNK_SIZE;
   for (var i = 0; i < this.yelpBookmarks_.length; i += cs) {
+    // TODO(dolapo): change to do this serially?
     var chunk = goog.array.slice(this.yelpBookmarks_,
                                  i, Math.min(this.yelpBookmarks_.length, i + cs))
     var uri = new goog.Uri('/matchvenues');
