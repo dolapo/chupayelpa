@@ -37,10 +37,30 @@
         {% if user %}
           <div id="enter-yelp" class="content yelp-content{%if yelpId%} has-yelp{%else%} no-yelp{%end%}">
             {% if yelpId %}
-              <h1>Your Yelp Info</h1>
+              <h1>Your {{ len(yelpBookmarks) }} Yelp Bookmarks</h1>
               <div class="body">
                 <div class="head">
-                  {{ len(yelpBookmarks) }} bookmarks
+                </div>
+                <div class="bklist">
+                  {% for yelpBookmark in yelpBookmarks %}
+                    <div class="bkrow">
+                      <div class="info">
+                        <div class="name">
+                          <a href="http://yelp.com/biz/{{yelpBookmark['id']}}">
+                            {{yelpBookmark['name']}}
+                          </a>
+                        </div>
+                        {% if yelpBookmark['neighborhoods'] %}
+                          <div class="neighborhood">
+                            {{yelpBookmark['neighborhoods']}}
+                          </div>
+                        {% end %}
+                        <div class="address">
+                          {{'<br />'.join(yelpBookmark['formatted_address_brief'])}}
+                        </div>
+                      </div>
+                    </div>
+                  {% end %}
                 </div>
               </div>
             {% else %}

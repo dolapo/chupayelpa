@@ -91,3 +91,37 @@ div.content.yelp-content {
   -webkit-box-shadow: -1px 1px 1px #888 inset;
   box-shadow: -1px 1px 1px #888 inset;
 }
+
+#enter-yelp .bklist {
+  overflow: auto;
+  max-height: 350px;
+}
+
+#enter-yelp .bkrow {
+  border-bottom: 1px solid #d4d4d4;
+  max-width: 95%;
+  padding: 6px 0 12px 0;
+}
+
+#enter-yelp .bkrow:hover {
+  background-color: #fafafa;
+}
+
+#enter-yelp .bkrow .name {
+  font-size: 11pt;
+  margin-bottom: 6px;
+  color: #888;
+}
+
+#enter-yelp .bkrow .name a,
+#enter-yelp .bkrow .name a:visited {
+  text-decoration: none;
+  color: #888;
+}
+#enter-yelp .bkrow .name a:hover {
+  text-decoration: underline;
+}
+
+#enter-yelp .bkrow:hover .name a {
+  color: #00c;
+}
