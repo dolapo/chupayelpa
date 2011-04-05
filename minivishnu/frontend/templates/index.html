@@ -1,13 +1,39 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" type="text/css" href="static/reset.css" />
+    <link rel="stylesheet" type="text/css" href="static/main.css" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Copse|Cuprum">
     <title>beware the chupayelpa</title>
   </head>
-  <body>
-    {% if user %}
-      Hi there {{ user['firstName'] }}
-    {% else %}
-      <a href="/auth/foursquare">login with foursquare</a>
-    {% end %}
+  <body class="main">
+    <div class="logo">
+      chupayelpa
+    </div>
+    <div class="container">
+      <div class="all-content">
+        <div id="login-content" class="content">
+          <h1>
+          {% if user %}
+            <img width="24" height="24"
+                 align="absmiddle" class="user-img" src="{{user['photo']}}" />
+            <span>Hi there {{ user['firstName'] }}</span>
+          {% else %}
+            Hi there<br />
+          {% end %}
+          </h1>
+          <div class="body">
+            {% if user %}
+              <span class="small">
+                (p.s. you can <a href="#">log out</a> of foursquare if you wish.)
+              </span>
+            {% else %}
+              <a href="/auth/foursquare">login with foursquare</a> to get started.
+            {% end %}
+          </div>
+        </div>
+      </div>
+    </div>
+
   </body>
 </html>
