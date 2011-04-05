@@ -4,6 +4,10 @@
     <title>beware the chupayelpa</title>
   </head>
   <body>
-    Hi there
+    {% if user %}
+      Hi there {{ user['firstName'] }}
+    {% else %}
+      <a href="/auth/foursquare">login with foursquare</a>
+    {% end %}
   </body>
 </html>
